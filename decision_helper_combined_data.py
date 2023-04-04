@@ -1,14 +1,13 @@
+import csv
 import json
 
-# load the player stats data for both years from the files (replace filenames with your own)
+# load the player stats data from the file (replace filename with your own)
 with open("ipl2022.json", "r") as f:
-    ipl2022_data = json.load(f)
+    data2022 = json.load(f)
 
+# load the player stats data for 2023 from the file (replace filename with your own)
 with open("ipl2023.json", "r") as f:
-    ipl2023_data = json.load(f)
-
-# combine the player stats data from both years
-data = {"toprunsscorers": ipl2022_data["toprunsscorers"] + ipl2023_data["toprunsscorers"]}
+    data2023 = json.load(f)
 
 # load the player data for the current match from the file (replace filename with your own)
 with open("match.json", "r") as f:
@@ -38,8 +37,8 @@ weights = {
 }
 
 # calculate the total score and selection percentage for each player in the current match
-scores = {}
-for player in data["toprunsscorers"]:
+scores = []
+for player in data2022["toprunsscorers"] + data2023["toprunsscorers"]:
     player_name = player["StrikerName"]
     if player_name in match_players:
         score = 0
@@ -51,13 +50,22 @@ for player in data["toprunsscorers"]:
                 continue  # skip calculation for non-numeric values
         player_data = match_players[player_name]
         skill_name = player_data["skill_name"]
-        sel_per = player_data["sel_per"]
-        scores[player_name] = {"score": score, "skill_name": skill_name, "sel_per": sel_per}
+        sel_percent = player_data.get("sel_per", 0)
+        scores.append([player_name, skill_name, score, sel_percent])
 
-# print all players and their scores sorted by score in descending order, along with their selection percentage
-print("All players:")
-for player, data in sorted(scores.items(), key=lambda x: x[1]['score'], reverse=True):
-    score = data["score"]
-    skill_name = data["skill_name"]
-    sel_per = data["sel_per"]
-    print(f"{player} ({skill_name}): {score:.2f}, Selection percentage: {sel_per}")
+# sort the scores in descending order of score
+scores.sort(key=lambda x: x[2], reverse=True)
+
+# write the scores to a CSV file
+team1_name = "DC"
+team2_name = "GT"
+filename = f"{team1_name}vs{team2_name}.csv"
+
+with open(filename, "w", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["Player Name", "Skill", "Score", "Selection Percentage"])
+    for row in scores:
+        writer.writerow(row)
+        print(f"{row[0]} ({row[1]}): Score = {row[2]:.2f}, Sel_Per = {row[3]:.2f}")
+        
+print(f"Output written to {filename}")
