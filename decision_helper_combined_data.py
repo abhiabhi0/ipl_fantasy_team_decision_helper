@@ -37,7 +37,7 @@ weights = {
     "BattingAverage": 1.5,
 }
 
-# calculate the total score for each player in the current match
+# calculate the total score and selection percentage for each player in the current match
 scores = {}
 for player in data["toprunsscorers"]:
     player_name = player["StrikerName"]
@@ -51,11 +51,13 @@ for player in data["toprunsscorers"]:
                 continue  # skip calculation for non-numeric values
         player_data = match_players[player_name]
         skill_name = player_data["skill_name"]
-        scores[player_name] = {"score": score, "skill_name": skill_name}
+        sel_per = player_data["sel_per"]
+        scores[player_name] = {"score": score, "skill_name": skill_name, "sel_per": sel_per}
 
-# print all players and their scores sorted by score in descending order
+# print all players and their scores sorted by score in descending order, along with their selection percentage
 print("All players:")
 for player, data in sorted(scores.items(), key=lambda x: x[1]['score'], reverse=True):
     score = data["score"]
     skill_name = data["skill_name"]
-    print(f"{player} ({skill_name}): {score:.2f}")
+    sel_per = data["sel_per"]
+    print(f"{player} ({skill_name}): {score:.2f}, Selection percentage: {sel_per}")
