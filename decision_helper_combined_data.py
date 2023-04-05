@@ -21,37 +21,44 @@ for player in match_data["Data"]["Value"]["players"]:
 # define the weights for each statistic (tweak as necessary)
 weights = {
     "StrikeRate": 1.5,
-    "DBFreq": 1,
-    "BdryFreq": 1,
+    "DBFreq": -0.5,
+    "BdryFreq": 1.5,
     "BdryPercent": 1,
     "ScoringBalls": 1.5,
-    "Ones": 0.5,
-    "Twos": 1,
-    "Fours": 1.5,
-    "Sixes": 2,
-    "Outs": -2,
+    "Ones": 1,
+    "Twos": 1.5,
+    "Fours": 2,
+    "Sixes": 4,
+    "Outs": -1,
     "NotOuts": 1,
     "FiftyPlusRuns": 2,
     "Centuries": 5,
     "BattingAverage": 1.5,
 }
 
-# calculate the total score and selection percentage for each player in the current match
-scores = []
+# calculate the total score for each player across both seasons
+cumulative_scores = {}
 for player in data2022["toprunsscorers"] + data2023["toprunsscorers"]:
     player_name = player["StrikerName"]
     if player_name in match_players:
-        score = 0
-        for stat, weight in weights.items():
-            try:
-                value = float(player[stat])
-                score += value * weight
-            except ValueError:
-                continue  # skip calculation for non-numeric values
-        player_data = match_players[player_name]
-        skill_name = player_data["skill_name"]
-        sel_percent = player_data.get("sel_per", 0)
-        scores.append([player_name, skill_name, score, sel_percent])
+        if player_name not in cumulative_scores:
+            cumulative_scores[player_name] = {"2022": 0, "2023": 0}
+        for season in ["2022", "2023"]:
+            weight = 0.75 if season == "2022" else 1
+            for stat, w in weights.items():
+                try:
+                    value = float(player[stat])
+                    cumulative_scores[player_name][season] += value * w * weight
+                except ValueError:
+                    pass
+
+# calculate the final score for each player and write it to the CSV file
+scores = []
+for player_name, score_dict in cumulative_scores.items():
+    skill_name = match_players[player_name]["skill_name"]
+    sel_percent = match_players[player_name].get("sel_per", 0)
+    final_score = sum(score_dict.values()) / 2
+    scores.append([player_name, skill_name, final_score, sel_percent])
 
 # sort the scores in descending order of score
 scores.sort(key=lambda x: x[2], reverse=True)
@@ -59,7 +66,7 @@ scores.sort(key=lambda x: x[2], reverse=True)
 # write the scores to a CSV file
 team1_name = "DC"
 team2_name = "GT"
-filename = f"{team1_name}vs{team2_name}.csv"
+filename = f"{team1_name}vs{team2_name}Combined.csv"
 
 with open(filename, "w", newline="") as f:
     writer = csv.writer(f)
