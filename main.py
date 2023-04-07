@@ -8,13 +8,13 @@ print("Then proceed further")
 
 team1 = input("Enter team1 name: ")
 team2 = input("Enter team2 name: ")
-match_num = input("Enter match number from fantasy.ipl: ")
+# match_num = input("Enter match number from fantasy.ipl: ")
 
 most_wickets_2023_url = 'https://ipl-stats-sports-mechanic.s3.ap-south-1.amazonaws.com/ipl/feeds/stats/107-mostwickets.js?callback=onmostwickets&_=1680615188201'
 most_wickets_2023_filename = 'most_wickets_2023.json'
 most_runs_2023_url = 'https://ipl-stats-sports-mechanic.s3.ap-south-1.amazonaws.com/ipl/feeds/stats/107-toprunsscorers.js?callback=ontoprunsscorers&_=1680598985722'
 most_runs_2023_filename = 'most_runs_2023.json'
-todays_team_url = 'https://fantasy.iplt20.com/daily/services/feed/players?lang=en&gamedayId='+match_num+'&announcedVersion=04032023184908'
+#todays_team_url = 'https://fantasy.iplt20.com/daily/services/feed/players?lang=en&gamedayId='+match_num+'&announcedVersion=04032023184908'
 
 team1_vs_team2_filename = f"{team1}vs{team2}.json"
 
