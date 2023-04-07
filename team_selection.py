@@ -22,3 +22,8 @@ for b_comb in batsmen_combinations:
             # check if there are 2 or 3 performing bowlers
             if sum([bo in bo_comb for bo in bowlers]) > 1:
                 print(f"Batsmen: {b_comb}, Bowlers: {bo_comb}")
+        # check if there are 2 or 3 performing batsmen
+        elif sum([b in b_comb for b in batsmen]) > 1:
+            # check if there is only one performing bowler
+            if sum([bo in bo_comb for bo in bowlers]) == 1:
+                print(f"Batsmen: {b_comb}, Bowlers: {bo_comb}")
